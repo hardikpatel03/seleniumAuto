@@ -12,11 +12,12 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -64,7 +65,7 @@ public class baseClass {
 
 			WebDriverManager.firefoxdriver().setup();
 
-			driver = new ChromeDriver();
+			driver = new FirefoxDriver();
 			// firefox browser
 		} else if (browserName.equalsIgnoreCase("edge")) {
 
@@ -80,7 +81,7 @@ public class baseClass {
 
 	}
 	
-	@BeforeTest
+	@BeforeClass
 	public void setup() {
 
 		htmlReporter = new ExtentSparkReporter(System.getProperty("user.dir") + "/test-output/myReport.html");
@@ -108,19 +109,19 @@ public class baseClass {
 	public void tearDown(ITestResult result) throws IOException {
 		if (result.getStatus() == ITestResult.FAILURE) {
 
-			test.log(Status.FAIL, "Test CASE Failed is " + result.getName()); // To add name in extent report
+			test.log(Status.FAIL, "TestCase Failed is " + result.getName()); // To add name in extent report
 
-			test.log(Status.FAIL, "Test CASE Failed is " + result.getThrowable()); // To throw exception
+			test.log(Status.FAIL, "TestCase Failed is " + result.getThrowable()); // To throw exception
 
 			String screenshotPath = getScreenshot(driver, result.getName());
 
 			test.addScreenCaptureFromPath(screenshotPath); // Adding screenshot
 
 		} else if (result.getStatus() == ITestResult.SKIP) {
-			test.log(Status.SKIP, "test case skipped is" + result.getName());
+			test.log(Status.SKIP, "TestCase Skipped is" + result.getName());
 
 		} else if (result.getStatus() == ITestResult.SUCCESS) {
-			test.log(Status.PASS, "Test case passed is" + result.getName());
+			test.log(Status.PASS, "TestCase Passed is" + result.getName());
 		}
 
 	}
@@ -128,6 +129,7 @@ public class baseClass {
 	@AfterTest
 	public void endReport() {
 		extent.flush();
+		driver.quit();
 	}
 
 	public static String getScreenshot(WebDriver driver, String screenshotName) throws IOException {
@@ -146,13 +148,5 @@ public class baseClass {
 	
 	  return destination;
 	}
-
-//	@BeforeMethod
-//	public void launchURL() throws IOException {
-//
-//		initializeddriver();
-//		String url = prop.getProperty("url");
-//		driver.get(url);
-//	}
 
 }
